@@ -25,7 +25,7 @@ export default class AppCamera implements IAppCamera {
       this.far,
     );
 
-    this.camera.position.set(0, -25, 10);
+    this.camera.position.set(0, -70, 50);
     // this.camera.lookAt(0, 50, 0);
   }
 

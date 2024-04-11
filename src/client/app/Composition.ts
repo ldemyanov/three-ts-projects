@@ -1,4 +1,4 @@
-import { BoxGeometry, CircleGeometry, Group, Mesh, MeshPhongMaterial, MeshStandardMaterial, PlaneGeometry, Points, PointsMaterial } from "three";
+import { BoxGeometry, CircleGeometry, Group, Mesh, MeshLambertMaterial, MeshPhongMaterial, MeshStandardMaterial, PlaneGeometry, Points, PointsMaterial, SphereGeometry } from "three";
 import PointContainer from "./PointContainer";
 
 
@@ -14,17 +14,14 @@ export interface IComposition {
 }
 
 export default class Composition implements IComposition {
-  public objects: Map<string, Mesh | Group>;
-  public animations: Map<string, MeshAnimation>;
+  public objects = new Map<string, Mesh | Group>()
+  public animations = new Map<string, MeshAnimation>();
 
   constructor() {
-    this.objects = new Map();
-    this.animations = new Map();
-
     // this.createCubes();
-    this.createPointCloud();
-
+    // this.createPointCloud();
     // this.createPlate();
+    this.createSomeShit();
     // this.createHouse();
   }
 
@@ -118,6 +115,34 @@ export default class Composition implements IComposition {
       })
     })
   }
+
+  createSomeShit() {
+    const figure = new SphereGeometry(15, 100);
+
+    const palka = new BoxGeometry(3, 3, 70);
+
+    const palkaMatetial = new MeshLambertMaterial({
+      color: 0xF57B2C
+    })
+
+    const material = new MeshStandardMaterial({
+      color: 0xAA00BB,
+      flatShading: true,
+      // shininess: 80,
+      roughness: 0.2,
+      metalness: 0.4,
+    });
+
+    const mesh = new Mesh(figure, material);
+
+    const palkaMesh = new Mesh(palka, palkaMatetial);
+
+    mesh.position.z = 30;
+
+    this.objects.set("someShit", mesh);
+    this.objects.set("palka", palkaMesh);
+  }
+
 
   animate(elapsedTime: number, delta: number) {
     this.animations.forEach(f => f(elapsedTime, delta));
