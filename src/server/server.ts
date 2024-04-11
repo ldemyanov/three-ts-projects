@@ -1,8 +1,14 @@
 import express from 'express'
 import path from 'path'
 import http from 'http'
+import cors from 'cors'
 
 const port: number = 3000
+
+// const corsOptions = {
+//     origin: '*',
+//     optionsSuccessStatus: 200,
+// };
 
 class App {
     private server: http.Server
@@ -11,7 +17,12 @@ class App {
     constructor(port: number) {
         this.port = port
         const app = express()
+        app.use(cors({
+            origin: "*",
+            allowedHeaders: "*"
+        }))
         app.use(express.static(path.join(__dirname, '../client')))
+
         // In the webpack version of the boilerplate, it is not necessary
         // to add static references to the libs in node_modules if
         // you are using module specifiers in your client.ts imports.

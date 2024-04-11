@@ -1,4 +1,4 @@
-import { Clock, DirectionalLight, Scene } from "three";
+import { AmbientLight, Camera, Clock, DirectionalLight, Object3D, Scene } from "three";
 import AppCamera, { IAppCamera } from "./AppCamera";
 import AppRenderer, { IAppRenderer } from "./AppRenderer";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
@@ -6,10 +6,14 @@ import Composition, { IComposition } from "./Composition";
 
 
 export interface IAppScene {
+
+  scene: Scene;
+
   appCamera: IAppCamera;
   resize: () => void;
   build: () => void;
   animate: () => void;
+  dynamicAdd: (obj: Object3D) => void; 
 }
 
 export default class AppScene implements IAppScene {
@@ -20,12 +24,14 @@ export default class AppScene implements IAppScene {
   private orbitControl: OrbitControls;
 
   private light = new DirectionalLight(0xffffff, 0.5);
-  private scene = new Scene();
+  private ambientLight = new AmbientLight(0xffffff, 0.3);
+
+  public scene = new Scene();
   private clock = new Clock();
 
   constructor() {
     this.appCamera = new AppCamera();
-    this.appRenderer =  new AppRenderer();
+    this.appRenderer = new AppRenderer();
     this.composition = new Composition();
 
     this.orbitControl = new OrbitControls(this.appCamera.camera, this.appRenderer.canvas);
@@ -40,12 +46,18 @@ export default class AppScene implements IAppScene {
 
   build() {
     this.light.position.set(5, 5, 5);
+    this.ambientLight.position.set(0, 0, 0);
 
     this.composition.objects.forEach((obj) => {
       this.scene.add(obj);
     });
 
     this.scene.add(this.light);
+    this.scene.add(this.ambientLight);
+  }
+
+  dynamicAdd(obj: Object3D) {
+    this.scene.add(obj)
   }
 
   animate() {
