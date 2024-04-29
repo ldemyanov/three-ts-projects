@@ -1,4 +1,4 @@
-import { Camera, Scene, WebGLRenderer } from "three"
+import { Camera, Scene, VSMShadowMap, WebGLRenderer } from "three"
 
 export interface IAppRenderer {
   canvas: HTMLCanvasElement;
@@ -8,13 +8,19 @@ export interface IAppRenderer {
 
 export default class AppRenderer implements IAppRenderer {
   canvas: HTMLCanvasElement;
-  private renderer = new WebGLRenderer();
+  private renderer = new WebGLRenderer({ antialias: true });
 
   constructor() {
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = VSMShadowMap;
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setClearColor(0xffffff);
+    
     this.canvas = this.renderer.domElement;
 
     document.body.appendChild(this.renderer.domElement);
   }
+
 
   render(scene: Scene, camera: Camera) {
     this.renderer.render(scene, camera);

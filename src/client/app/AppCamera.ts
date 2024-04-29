@@ -13,9 +13,9 @@ export interface IAppCamera {
 export default class AppCamera implements IAppCamera {
   camera: PerspectiveCamera;
 
-  fov = 75;
+  fov = 60;
   near = 0.01;
-  far = 5000;
+  far = 500;
 
   constructor() {
     this.camera = new PerspectiveCamera(
@@ -25,8 +25,7 @@ export default class AppCamera implements IAppCamera {
       this.far,
     );
 
-    this.camera.position.set(0, -70, 50);
-    // this.camera.lookAt(0, 50, 0);
+    this.camera.position.set(-15, 40, 100);
   }
 
   private getAspect() {

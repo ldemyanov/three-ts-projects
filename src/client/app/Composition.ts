@@ -1,4 +1,4 @@
-import { BoxGeometry, CircleGeometry, Group, Mesh, MeshLambertMaterial, MeshPhongMaterial, MeshStandardMaterial, PlaneGeometry, Points, PointsMaterial, SphereGeometry } from "three";
+import { BoxGeometry, CircleGeometry, ColorRepresentation, Group, Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshPhongMaterial, MeshStandardMaterial, MeshToonMaterial, PlaneGeometry, Points, PointsMaterial, SphereGeometry, TextureLoader } from "three";
 import PointContainer from "./PointContainer";
 
 
@@ -21,8 +21,16 @@ export default class Composition implements IComposition {
     // this.createCubes();
     // this.createPointCloud();
     // this.createPlate();
-    this.createSomeShit();
+    const lolipop1 = this.createLoliPop("lolipop1", 0x7189ff);
+
+    const lolipop2 = this.createLoliPop("lolipop2", 0x9950ff);
+    lolipop2.position.z = 40;
+
+    const lolipop3 = this.createLoliPop("lolipop3", 0xf7a072);
+    lolipop3.position.x = 40;
+
     // this.createHouse();
+    this.createGround();
   }
 
   createCubes() {
@@ -116,31 +124,58 @@ export default class Composition implements IComposition {
     })
   }
 
-  createSomeShit() {
-    const figure = new SphereGeometry(15, 100);
+  createLoliPop(name: string, color: ColorRepresentation) {
+    const figure = new SphereGeometry(15, 50);
 
-    const palka = new BoxGeometry(3, 3, 70);
+    const loader = new TextureLoader();
 
-    const palkaMatetial = new MeshLambertMaterial({
-      color: 0xF57B2C
-    })
+    const material2 = new MeshBasicMaterial({
+      color: 0xFF8844,
+      map: loader.load('https://threejsfundamentals.org/threejs/resources/images/wall.jpg'),
+    });
+
+    const palka = new BoxGeometry(3, 40, 3);
 
     const material = new MeshStandardMaterial({
-      color: 0xAA00BB,
+      color,
       flatShading: true,
-      // shininess: 80,
       roughness: 0.2,
       metalness: 0.4,
     });
 
     const mesh = new Mesh(figure, material);
+    mesh.position.y = 50;
+    mesh.castShadow = true;
 
-    const palkaMesh = new Mesh(palka, palkaMatetial);
+    const palkaMesh = new Mesh(palka, material2);
+    palkaMesh.position.y = 20;
+    palkaMesh.castShadow = true;
 
-    mesh.position.z = 30;
+    const loliPop = new Group();
+    loliPop.add(mesh, palkaMesh);
 
-    this.objects.set("someShit", mesh);
-    this.objects.set("palka", palkaMesh);
+    this.objects.set(name, loliPop);
+
+    this.animations.set(name, (_, delta) => {
+      mesh.rotateY(Math.PI * (delta / 7));
+    })
+
+    return loliPop;
+  }
+
+  createGround() {
+    const groundGeometry = new PlaneGeometry(10000, 10000);
+    const groundMaterial = new MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.006,
+    });
+    const groundMesh = new Mesh(groundGeometry, groundMaterial);
+
+    groundMesh.position.set(0, 0, -10);
+    groundMesh.rotation.set(Math.PI / -2, 0, 0);
+    groundMesh.receiveShadow = true;
+
+    this.objects.set("ground", groundMesh);
   }
 
 
