@@ -25,7 +25,7 @@ export default class AppCamera implements IAppCamera {
       this.far,
     );
 
-    this.camera.position.set(-15, 40, 100);
+    this.camera.position.set(-34, 70, 180);
   }
 
   private getAspect() {

@@ -1,5 +1,6 @@
-import { BoxGeometry, CircleGeometry, ColorRepresentation, Group, Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshPhongMaterial, MeshStandardMaterial, MeshToonMaterial, PlaneGeometry, Points, PointsMaterial, SphereGeometry, TextureLoader } from "three";
+import { BoxGeometry, CircleGeometry, ColorRepresentation, Group, Light, Material, Mesh, MeshBasicMaterial, MeshLambertMaterial, MeshPhongMaterial, MeshStandardMaterial, MeshToonMaterial, Object3DEventMap, PlaneGeometry, Points, PointsMaterial, SphereGeometry, TextureLoader } from "three";
 import PointContainer from "./PointContainer";
+import GUI from "lil-gui";
 
 
 // import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
@@ -7,30 +8,67 @@ import PointContainer from "./PointContainer";
 
 type MeshAnimation = (elapsedTime: number, delta: number) => void;
 
+type SomeMesh = Mesh<SphereGeometry, MeshStandardMaterial, Object3DEventMap>;
+
+export type Thing = Mesh | Group | Light;
+
 export interface IComposition {
-  objects: Map<string, Mesh | Group>;
+  objects: Map<string, Thing>;
   animations: Map<string, MeshAnimation>;
   animate: MeshAnimation;
+
+  get: (name: string) => Thing | undefined;
 }
 
 export default class Composition implements IComposition {
-  public objects = new Map<string, Mesh | Group>()
+  public objects = new Map<string, Thing>()
   public animations = new Map<string, MeshAnimation>();
+  private settings: GUI;
 
-  constructor() {
+  private uiParams = {
+    groundColor: 0x70ff73,
+    lolipop1: 0xfe6262,
+    lolipop2: 0x9950ff,
+    lolipop3: 0x1ff0ff,
+  }
+
+  constructor(settings: GUI) {
+    this.settings = settings;
+
     // this.createCubes();
     // this.createPointCloud();
     // this.createPlate();
-    const lolipop1 = this.createLoliPop("lolipop1", 0x7189ff);
+    const lolipop1 = this.createLoliPop("lolipop1", this.uiParams.lolipop1);
 
-    const lolipop2 = this.createLoliPop("lolipop2", 0x9950ff);
+    const lolipop2 = this.createLoliPop("lolipop2", this.uiParams.lolipop2);
     lolipop2.position.z = 40;
 
-    const lolipop3 = this.createLoliPop("lolipop3", 0xf7a072);
+    const lolipop3 = this.createLoliPop("lolipop3", this.uiParams.lolipop3);
     lolipop3.position.x = 40;
 
+    const ground = this.createGround();
+
     // this.createHouse();
-    this.createGround();
+
+    this.settings.addColor(this.uiParams, "groundColor")
+      .name("color")
+      .onChange(() => ground.material.color.set(this.uiParams.groundColor))
+
+    this.settings.addColor(this.uiParams, "lolipop1")
+      .name("lolipop1")
+      .onChange(() => (lolipop1.children[0] as SomeMesh).material.color.set(this.uiParams.lolipop1))
+
+    this.settings.addColor(this.uiParams, "lolipop2")
+      .name("lolipop2")
+      .onChange(() => (lolipop2.children[0] as SomeMesh).material.color.set(this.uiParams.lolipop2))
+
+    this.settings.addColor(this.uiParams, "lolipop3")
+      .name("lolipop3")
+      .onChange(() => (lolipop3.children[0] as SomeMesh).material.color.set(this.uiParams.lolipop3))
+  }
+
+  public get(name: string) {
+    return this.objects.get(name);
   }
 
   createCubes() {
@@ -166,8 +204,8 @@ export default class Composition implements IComposition {
   createGround() {
     const groundGeometry = new PlaneGeometry(10000, 10000);
     const groundMaterial = new MeshStandardMaterial({
-      color: 0xffffff,
-      roughness: 0.006,
+      color: this.uiParams.groundColor,
+      // roughness: 0.006,
     });
     const groundMesh = new Mesh(groundGeometry, groundMaterial);
 
@@ -176,6 +214,8 @@ export default class Composition implements IComposition {
     groundMesh.receiveShadow = true;
 
     this.objects.set("ground", groundMesh);
+
+    return groundMesh;
   }
 
 

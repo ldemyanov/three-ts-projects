@@ -15,7 +15,7 @@ export default class AppRenderer implements IAppRenderer {
     this.renderer.shadowMap.type = VSMShadowMap;
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setClearColor(0xffffff);
-    
+
     this.canvas = this.renderer.domElement;
 
     document.body.appendChild(this.renderer.domElement);

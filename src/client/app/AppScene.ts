@@ -7,10 +7,9 @@ import GUI from "lil-gui";
 
 
 export interface IAppScene {
-
   scene: Scene;
-
   appCamera: IAppCamera;
+
   resize: () => void;
   build: () => void;
   animate: () => void;
@@ -26,12 +25,12 @@ export default class AppScene implements IAppScene {
 
   public scene = new Scene();
   private clock = new Clock();
-  private gui = new GUI();
+  private settings = new GUI();
 
   constructor() {
     this.appCamera = new AppCamera();
     this.appRenderer = new AppRenderer();
-    this.composition = new Composition();
+    this.composition = new Composition(this.settings);
 
     this.orbitControl = this.addOrbitController(this.appCamera.camera, this.appRenderer.canvas);
 
@@ -70,11 +69,8 @@ export default class AppScene implements IAppScene {
 
     const ambientLight = new AmbientLight(0xffffff);
 
-
-    // ambientLight.position.set(0, 0, 0);
-
-    this.scene.add(dirLight);
-    this.scene.add(ambientLight);
+    this.composition.objects.set("dirLight", dirLight);
+    this.composition.objects.set("ambientLight", ambientLight);
   }
 
 
